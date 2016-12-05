@@ -15,7 +15,7 @@
 #include "LevelManager.h"
 #include "GameMenu.h"
 #include "GameEnd.h"
-
+#include "Coordinate.h"
 USING_NS_CC;
 using namespace CocosDenshion;
 
@@ -69,10 +69,11 @@ public:
 	virtual bool init();
 
 	bool initialize(int currentLevel);
+	//文件改到了Coordinate
 	// TileMap坐标转换为OpenGL坐标
-	Point locationForTilePos(Point pos);
+	//Point locationForTilePos(Point pos);
 	// 将OpenGL坐标转换为TileMap坐标
-	Point tileCoordForPosition(Point position);
+	//Point tileCoordForPosition(Point position);
 	// 回调更新函数，该函数每一帧都会调用
 	virtual void update(float delta);
 	/**
@@ -95,14 +96,7 @@ public:
 	// 随机出现怪物
 	virtual void updateMonster(float delta);
 	Vec2 & getBulletexX1(Vec2 monster, Vec2 turret, int num);
-	// 检测怪物是否进入炮塔的攻击范围
-	bool checkPointInCircle(Point monsterPoint, Point turretPoint, int area);
-	// 计算发射炮弹时计算炮弹的旋转方向
-	float getTurretRotation(Point monsterPoint, Turret* turret);
-	// 根据炮弹移动距离计算炮弹需要移动时间
-	float getBulletMoveTime(Point start, Point end);
-	// 检测坐标点是否障碍
-	bool getCollidable(Point position);
+
 	// 检测炮塔
 	virtual void detectionTurret(float delta);
 	// 检测碰撞
@@ -113,6 +107,17 @@ public:
 	virtual void gameOver(int tag);
 	// 使用CREATE_FUNC宏创建当前类的对象
 	CREATE_FUNC(Game);
+
+
+
+	// 检测怪物是否进入炮塔的攻击范围
+	//bool checkPointInCircle(Point monsterPoint, Point turretPoint, int area);
+	// 计算发射炮弹时计算炮弹的旋转方向
+	//float getTurretRotation(Point monsterPoint, Turret* turret);
+	// 根据炮弹移动距离计算炮弹需要移动时间
+	//float getBulletMoveTime(Point start, Point end);
+	// 检测坐标点是否障碍
+	//bool getCollidable(Point position);
 };
 
 #endif

@@ -22,6 +22,8 @@ public:
 
 	static Turret* createWithSpriteFrameName(const std::string& filename);
 
+	// 检测是否在圆攻击范围内
+	static bool checkPointInCircle(Vec2 monsterPoint, Vec2 turretPoint, int area);
 	// setter和getter函数
 	void setBulletName(std::string bulletName);
 

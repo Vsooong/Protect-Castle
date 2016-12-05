@@ -32,6 +32,16 @@ Turret* Turret::createWithSpriteFrameName(const std::string& filename)
 	return nullptr;
 }
 
+// 检测是否在圆攻击范围内
+bool Turret::checkPointInCircle(Vec2 monsterPoint, Vec2 turretPoint, int area)
+{
+	int x = monsterPoint.x - turretPoint.x;
+	int y = monsterPoint.y - turretPoint.y;
+	// sqrt函数求平方根
+	if (sqrt(x * x + y * y) <= area) return true;
+	return false;
+}
+
 void Turret::setBulletName(std::string bulletName)
 {
 	_bulletName = bulletName;

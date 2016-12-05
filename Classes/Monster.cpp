@@ -5,7 +5,6 @@
 //  
 //
 //
-
 #include "Monster.h"
 
 Monster* Monster::create(const std::string& filename)
