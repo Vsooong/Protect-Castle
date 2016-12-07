@@ -700,6 +700,7 @@ void Game::detectionTurret(float delta)
 						turret->setBullet(bullet1);
 						break;
 					}
+			
 					if (turret->getType() == 2)
 					{
 						monster->setLifeValue(monster->getLifeValue() - 1);
@@ -723,6 +724,7 @@ void Game::detectionTurret(float delta)
 								_isThisFinish = true;
 							}
 						}
+						
 					}
 				}
 			}
@@ -888,95 +890,3 @@ void Game::gameOver(int tag)
 	play_button->setPosition(Vec2(_screenWidth / 2 + 100, _screenHeight / 2 - 80));
 	this->addChild(play_button, 3);
 }
-
-
-
-
-/*
-// 检测是否在圆攻击范围内
-bool Game::checkPointInCircle(Vec2 monsterPoint, Vec2 turretPoint, int area)
-{
-int x = monsterPoint.x - turretPoint.x;
-int y = monsterPoint.y - turretPoint.y;
-// sqrt函数求平方根
-if (sqrt(x * x + y * y) <= area) return true;
-return false;
-}
-// 发射炮弹时计算炮弹的旋转方向
-float Game::getTurretRotation(Vec2 monsterPoint, Turret* turret)
-{
-// 求旋转的角度，需要使用三角代数：反正切 = 对面 / 邻边
-// monsterPoint.x：怪物坐标的x轴，turret->getPosition().x：炮塔坐标的x轴
-int offX = monsterPoint.x - turret->getPosition().x;
-// monsterPoint.y：怪物坐标的y轴，turret->getPosition().y：炮塔坐标的y轴
-int offY = monsterPoint.y - turret->getPosition().y;
-// 旋转弧度 = atan2f(反正切函数)（对面/邻边）
-float radian = atan2f(offY, offX);
-// CC_RADIANS_TO_DEGREES函数可以将弧度转化为角度
-float degrees = CC_RADIANS_TO_DEGREES(radian);
-// 转出来的角度和本例炮弹图片相差90度，因此，为了得到正确的方向，我们把需要将结果进行转换。
-return 90 - degrees;
-}
-
-*/
-
-
-/* LIWEI change in Coordinate
-Vec2 Game::locationForTilePos(Vec2 pos)改为static Vec2 locationForTilePos(Vec2 pos, TMXTiledMap* _tileMap);
-下同
-// TileMap坐标转换为OpenGL坐标
-Vec2 Game::locationForTilePos(Vec2 pos)
-{
-int x = (int)(pos.x*(_tileMap->getTileSize().width / CC_CONTENT_SCALE_FACTOR()));
-double pointHeight = _tileMap->getTileSize().height / CC_CONTENT_SCALE_FACTOR();
-int y = (int)((_tileMap->getMapSize().height * pointHeight) - (pos.y * pointHeight));
-return Vec2(x, y);
-}
-
-// 将OpenGL坐标转换为TileMap坐标
-Vec2 Game::tileCoordForPosition(Vec2 position){
-// 玩家位置的x除以地图的宽，得到的是地图横向的第几个格子（tile）
-int x = (int)(position.x / (_tileMap->getTileSize().width / CC_CONTENT_SCALE_FACTOR()));
-// 玩家位置的y除以地图的高，得到的是地图纵向第几个格子（tile），
-double pointHeight = _tileMap->getTileSize().height / CC_CONTENT_SCALE_FACTOR();
-int y = (int)((_tileMap->getMapSize().height * pointHeight - position.y) / pointHeight);
-return Vec2(x, y);
-}
-
-
-bool Game::getCollidable(Vec2 position)
-{
-// 将屏幕坐标转成地图坐标，用于判断是否可以放置炮塔
-Vec2 tilePos = Coordinate::tileCoordForPosition(position,_tileMap);
-// 如果触摸点是不可放置炮塔（即有障碍物）的位置，则直接return
-int tileGid = _collidable->getTileGIDAt(tilePos);
-if (tileGid) {
-// 使用GID来查找指定tile的属性，返回一个Value
-Value properties = _tileMap->getPropertiesForGID(tileGid);
-// 返回的Value实际是一个ValueMap
-ValueMap map = properties.asValueMap();
-// 查找ValueMap，判断是否有障碍物，如果有，直接返回
-std::string value = map.at("collidable").asString();
-if (value.compare("true") == 0) {
-return true;
-}
-}
-return false;
-}
-
-
-
-
-// 根据炮弹移动距离计算炮弹需要移动时间
-float Game::getBulletMoveTime(Vec2 start, Vec2 end){
-// 将起点和终点的坐标转换为TileMap坐标
-Vec2 tileStart = Coordinate::tileCoordForPosition(start,_tileMap);
-Vec2 tileEnd = Coordinate::tileCoordForPosition(end,_tileMap);
-// 移动一个网格的时间
-float duration = 0.02f;
-// 根据移动网格计算移动时间
-duration = duration * sqrtf((tileStart.x - tileEnd.x) * (tileStart.x - tileEnd.x)
-+ (tileStart.y - tileEnd.y) * (tileStart.y - tileEnd.y));
-return duration;
-}
-*/

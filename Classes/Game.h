@@ -108,16 +108,6 @@ public:
 	// 使用CREATE_FUNC宏创建当前类的对象
 	CREATE_FUNC(Game);
 
-
-
-	// 检测怪物是否进入炮塔的攻击范围
-	//bool checkPointInCircle(Point monsterPoint, Point turretPoint, int area);
-	// 计算发射炮弹时计算炮弹的旋转方向
-	//float getTurretRotation(Point monsterPoint, Turret* turret);
-	// 根据炮弹移动距离计算炮弹需要移动时间
-	//float getBulletMoveTime(Point start, Point end);
-	// 检测坐标点是否障碍
-	//bool getCollidable(Point position);
 };
 
 #endif

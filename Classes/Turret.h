@@ -16,7 +16,7 @@ private:
 	Bullet* _bullet = nullptr; // 炮塔关联的炮弹对象
 	int _time = 0;//炮塔发射时间
 public:
-
+	Turret() {}
 	// 静态的create函数
 	static Turret* create(const std::string& filename);
 
