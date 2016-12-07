@@ -163,17 +163,7 @@ bool Game::initialize(int currentLevel)
 		// 将每一个屏幕坐标存储到路径集合当中
 		_pathPoints.pushBack(pointDelegate);
 	}
-	// 获得名称为princessObject的对象层
-	auto princessObject = _tileMap->getObjectGroup("princessObject");
-	// 获得名称为princess的地图对象，该对象在地图的位置就是公主出现的位置
-	ValueMap princessValueMap = princessObject->getObject("princess");
-	int princessX = princessValueMap.at("x").asInt();
-	int princessY = princessValueMap.at("y").asInt();
-	// 创建公主，并将地图中对象的x和y值作为公主出现的位置
-	_castle = Sprite::createWithSpriteFrameName("princess.png");
-	_castle->setPosition(princessX, princessY);
-	// 将公主添加为地图的子节点
-	_tileMap->addChild(_castle, 2);
+	_castle = Princess::getInstance(_tileMap);
 	/*************读取关卡数据结束**********************/
 
 

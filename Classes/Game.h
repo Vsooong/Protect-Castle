@@ -16,6 +16,7 @@
 #include "GameMenu.h"
 #include "GameEnd.h"
 #include "Coordinate.h"
+#include "Princess.h"
 USING_NS_CC;
 using namespace CocosDenshion;
 
