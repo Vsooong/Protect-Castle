@@ -1,11 +1,14 @@
 #ifndef __ProtectCastle__Turret__
 #define __ProtectCastle__Turret__
 
-#include <iostream>
 #include "cocos2d.h"
 #include "SpriteBase.h"
 #include "Bullet.h"
-
+#include "Monster.h"
+#include "LaunchAlgorithm.h"
+#include "SingleAlgorithm.h"
+#include "TripleAlgorithm.h"
+#include "MultipleAlgorithm.h"
 // 炮塔类
 class Turret : public SpriteBase
 {
@@ -15,6 +18,7 @@ private:
 	bool _select = false; // 炮塔是否被安放
 	Bullet* _bullet = nullptr; // 炮塔关联的炮弹对象
 	int _time = 0;//炮塔发射时间
+	LaunchAlgorithm * _LAL;
 public:
 	Turret() {}
 	// 静态的create函数
@@ -44,6 +48,12 @@ public:
 	void setType(int type);
 
 	int getType();
+	
+	void Launch(TMXTiledMap* _tileMap, Monster* monster, Vector<Bullet*> &_bulletVector);
+	
+	void setALA();
+
+	LaunchAlgorithm* getALA();
 };
 
 #endif

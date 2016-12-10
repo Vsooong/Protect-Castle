@@ -1,11 +1,3 @@
-//
-//  Turret.cpp
-//  ProtectPrincess
-//
-// 
-//
-//
-
 #include "Turret.h"
 
 Turret* Turret::create(const std::string& filename)
@@ -77,9 +69,15 @@ int Turret::getTime()
 	return _time;
 }
 
+std::string Turret::getBulletName()
+{
+	return _bulletName;
+}
+
 void Turret::setType(int type)
 {
 	_mtype = type;
+	setALA();
 }
 
 int Turret::getType()
@@ -87,7 +85,27 @@ int Turret::getType()
 	return _mtype;
 }
 
-std::string Turret::getBulletName()
+
+void Turret::Launch(TMXTiledMap* _tileMap, Monster* monster, Vector<Bullet*>& _bulletVector)
 {
-	return _bulletName;
+	_LAL->launch(_tileMap, monster, this->getPosition(), _bulletVector);
+}
+LaunchAlgorithm* Turret::getALA()
+{
+	return _LAL;
+}
+void Turret::setALA()
+{
+	if (_mtype == 0)
+	{
+		_LAL = new SingleAlgorithm();
+	}
+	else if (_mtype == 1)
+	{
+		_LAL = new TripleAlgorithm();
+	}
+	else
+	{
+		_LAL = new MultipleAlgorithm();
+	}
 }

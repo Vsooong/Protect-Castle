@@ -96,7 +96,6 @@ public:
 	virtual void updateLable(float delta);
 	// 随机出现怪物
 	virtual void updateMonster(float delta);
-	Vec2 & getBulletexX1(Vec2 monster, Vec2 turret, int num);
 
 	// 检测炮塔
 	virtual void detectionTurret(float delta);
