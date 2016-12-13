@@ -5,7 +5,6 @@
 //  
 //
 //
-
 #include "Monster.h"
 
 Monster* Monster::create(const std::string& filename)
@@ -60,4 +59,9 @@ void Monster::setHPInterval(double HPInterval)
 float Monster::getHpInterval()
 {
 	return _HPInterval;
+}
+
+void Monster::getInjured() { 
+	
+	_lifeValue - 1;
 }

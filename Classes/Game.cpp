@@ -1,9 +1,11 @@
 #include "Game.h"
 #include "ui/CocosGUI.h"
+#include <fstream>
+#include <cstdlib>
 
 USING_NS_CC;
 using namespace ui;
-
+using namespace std;
 static int monsterCount = 1; // 每一波出现多少怪物
 static int _currentLevel = 1;  // 当前关卡
 
@@ -11,6 +13,15 @@ Scene* Game::createSceneWithLevel(int selectLevel)
 {
 	// 获得关卡数
 	_currentLevel = selectLevel;
+	//把关卡信息存入文件以作为备忘录
+	ofstream  outfile;
+	outfile.open("level.txt", ios::out | ios::trunc);
+	if (outfile.is_open()) {
+		outfile << _currentLevel;
+		outfile.close();
+
+	}
+
 	// 创建一个场景对象，该对象将会由自动释放池管理内存的释放
 	auto scene = Scene::create();
 	// 创建层对象，该对象将会由自动释放池管理内存的释放
@@ -157,23 +168,13 @@ bool Game::initialize(int currentLevel)
 		// 根据x和y值创建一个坐标，该坐标是一个地图坐标
 		Vec2 tilePoint = Vec2(x, y);
 		// 将地图坐标转成屏幕坐标
-		Vec2 locationPoint = locationForTilePos(tilePoint);
+		Vec2 locationPoint = Coordinate::locationForTilePos(tilePoint,_tileMap);
 		// 由于Point不继承Ref，Vector不能存储，所以设计了PointDelegate类代理存储数据
 		auto pointDelegate = PointDelegate::create(locationPoint.x, locationPoint.y);
 		// 将每一个屏幕坐标存储到路径集合当中
 		_pathPoints.pushBack(pointDelegate);
 	}
-	// 获得名称为princessObject的对象层
-	auto princessObject = _tileMap->getObjectGroup("princessObject");
-	// 获得名称为princess的地图对象，该对象在地图的位置就是公主出现的位置
-	ValueMap princessValueMap = princessObject->getObject("princess");
-	int princessX = princessValueMap.at("x").asInt();
-	int princessY = princessValueMap.at("y").asInt();
-	// 创建公主，并将地图中对象的x和y值作为公主出现的位置
-	_castle = Sprite::createWithSpriteFrameName("princess.png");
-	_castle->setPosition(princessX, princessY);
-	// 将公主添加为地图的子节点
-	_tileMap->addChild(_castle, 2);
+	_castle = Princess::getInstance(_tileMap);
 	/*************读取关卡数据结束**********************/
 
 
@@ -304,10 +305,10 @@ bool Game::initialize(int currentLevel)
 		Vec2 touchLocation = touch->getLocation();
 		// 相对Node的坐标
 		Vec2 nodeLocation = this->convertToNodeSpace(touchLocation);
-		auto tempLocation = tileCoordForPosition(nodeLocation);
+		auto tempLocation = Coordinate::tileCoordForPosition(nodeLocation,_tileMap);
 		tempLocation.x -= static_cast<int>(tempLocation.x) % 2 - 1;
 		tempLocation.y -= static_cast<int>(tempLocation.y) % 2 - 1;
-		auto addLocation = locationForTilePos(tempLocation);
+		auto addLocation = Coordinate::locationForTilePos(tempLocation, _tileMap);
 		// 同一个位置上不能放置炮塔
 		for (int i = 0; i < _turretVector.size(); i++) {
 			auto temp = _turretVector.at(i);
@@ -337,7 +338,7 @@ bool Game::initialize(int currentLevel)
 		}
 		else{
 			// 如果准备建造炮塔的位置不是障碍物时
-			if (!this->getCollidable(nodeLocation)) {
+			if (!Coordinate::getCollidable(nodeLocation,_tileMap, _collidable)) {
 				// addImage显示
 				addImage->setVisible(true);
 				// 设置addImage位置为触碰位置
@@ -409,24 +410,6 @@ void Game::update(float delta)
 	updateLable(delta);
 }
 
-// TileMap坐标转换为OpenGL坐标
-Vec2 Game::locationForTilePos(Vec2 pos)
-{
-	int x = (int)(pos.x*(_tileMap->getTileSize().width / CC_CONTENT_SCALE_FACTOR()));
-	double pointHeight = _tileMap->getTileSize().height / CC_CONTENT_SCALE_FACTOR();
-	int y = (int)((_tileMap->getMapSize().height * pointHeight) - (pos.y * pointHeight));
-	return Vec2(x, y);
-}
-
-// 将OpenGL坐标转换为TileMap坐标
-Vec2 Game::tileCoordForPosition(Vec2 position){
-	// 玩家位置的x除以地图的宽，得到的是地图横向的第几个格子（tile）
-	int x = (int)(position.x / (_tileMap->getTileSize().width / CC_CONTENT_SCALE_FACTOR()));
-	// 玩家位置的y除以地图的高，得到的是地图纵向第几个格子（tile），
-	double pointHeight = _tileMap->getTileSize().height / CC_CONTENT_SCALE_FACTOR();
-	int y = (int)((_tileMap->getMapSize().height * pointHeight - position.y) / pointHeight);
-	return Vec2(x, y);
-}
 
 // 获得动画动作函数
 Animate* Game::getAnimateByName(std::string animName, float delay, int animNum)
@@ -528,27 +511,11 @@ void Game::updateMonster(float delta)
 					*/
 					int random = rand() % _monsterDatas->size();
 					auto monsterData = _monsterDatas->at(random);
-					// 根据怪物名称创建怪物
-					auto monster = Monster::create(monsterData->getName());
+
 					_aliveCount++;
-
-					// 设置怪物名称、生命值、消灭怪物的金币值和怪物出现坐标
-					monster->setName(monsterData->getName());
-					monster->setLifeValue(monsterData->getLifeValue());
-					monster->setGold(monsterData->getGold());
-					monster->setScale(0.7);
+					MonsterFactory* mstFcty = new MonsterFactory();
+					Monster* monster = (Monster*)mstFcty->getMonster(monsterData);
 					monster->setPosition(pestX, pestY);
-
-					// 创建进度条
-					auto loadingBar = LoadingBar::create("planeHP.png");
-					// 设置进度条方向
-					loadingBar->setDirection(LoadingBar::Direction::LEFT);
-					// 设置进度条大小
-					loadingBar->setScale(0.06f, 0.1f);
-					// 设置进度条百分比
-					loadingBar->setPercent(100);
-					// 将进度条设置为怪物血条
-					monster->setHP(loadingBar);
 					// 添加怪物血条
 					_tileMap->addChild(monster->getHP(), 2);
 					// 计算血条更新量
@@ -572,36 +539,6 @@ void Game::updateMonster(float delta)
 	}
 }
 
-Vec2 & Game::getBulletexX1(Vec2 monster, Vec2 turret, int num)
-{
-
-	int lengh = 1000;
-	int x1 = monster.x; int y1 = monster.y;
-	int x2 = turret.x;  int y2 = turret.y;
-	float dis = sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
-	float cos = (x1 - x2) / dis;
-	float sin = (y1 - y2) / dis;
-	float cosr = cos*sqrt(3) / 2 + sin * 0.5;
-	float sinr = sin*sqrt(3) / 2 - cos * 0.5;
-	float cosl = cos*sqrt(3) / 2 - sin * 0.5;
-	float sinl = sin*sqrt(3) / 2 + cos * 0.5;
-	if (num == 2){
-		int x = x2 + lengh*cosr;
-		int y = y2 + lengh*sinr;
-		return Vec2(x, y);
-	}
-	if (num == 1){
-		int x = x2 + lengh*cosl;
-		int y = y2 + lengh*sinl;
-		return Vec2(x, y);
-	}
-	if (num == 0){
-		int x = x2 + lengh*cos;
-		int y = y2 + lengh*sin;
-		return Vec2(x, y);
-	}
-	else return Vec2(0, 0);
-}
 
 // 怪物根据路径点移动
 void Game::monsterMoveWithWayPoints(Vector<PointDelegate*> pathVector, Monster* monster){
@@ -655,164 +592,25 @@ void Game::detectionTurret(float delta)
 			for (unsigned int j = 0; j < _monsterVector.size(); j++) {
 				auto monster = _monsterVector.at(j);
 				// 检测怪物是否在炮塔的攻击范围
-				bool flag = checkPointInCircle(monster->getPosition(), turret->getPosition(), 200);
-				if (flag)
+				bool flag = Turret::checkPointInCircle(monster->getPosition(), turret->getPosition(), 200);
+				if (flag==true)
 				{
-					// 创建炮弹
-					if (turret->getType() == 0)
-					{
-						auto bullet = Bullet::createWithSpriteFrameName(turret->getBulletName());
-						bullet->setScale(0.8);
-						bullet->setPosition(turret->getPosition().x, turret->getPosition().y);
-						_tileMap->addChild(bullet, 2);
-						float cocosAngle = getTurretRotation(monster->getPosition(), turret);
-						turret->runAction(RotateTo::create(0.05, cocosAngle));
-						Vec2 middle = getBulletexX1(monster->getPosition(), turret->getPosition(), 0);
-						float duration = getBulletMoveTime(bullet->getPosition(), middle);
-						auto moveTo = MoveTo::create(duration, middle);
-						bullet->runAction(moveTo);
-						_bulletVector.pushBack(bullet);
-						bullet->setShoot(true);
-						turret->setBullet(bullet);
-						break;
-					}
-					if (turret->getType() == 1)
-					{
-						auto bullet1 = Bullet::createWithSpriteFrameName(turret->getBulletName());
-						bullet1->settype(turret->getType());
-						auto bullet2 = Bullet::createWithSpriteFrameName(turret->getBulletName());
-						auto bullet3 = Bullet::createWithSpriteFrameName(turret->getBulletName());
-						bullet1->setScale(0.8);
-						bullet2->setScale(0.8);
-						bullet3->setScale(0.8);
-						bullet1->setPosition(turret->getPosition().x, turret->getPosition().y);
-						bullet2->setPosition(turret->getPosition().x, turret->getPosition().y);
-						bullet3->setPosition(turret->getPosition().x, turret->getPosition().y);
-						_tileMap->addChild(bullet1, 2);
-						_tileMap->addChild(bullet2, 2);
-						_tileMap->addChild(bullet3, 2);
-						// 获得需要旋转的角度
-						float cocosAngle = getTurretRotation(monster->getPosition(), turret);
-						// 根据炮弹发射方向旋转炮塔
-						turret->runAction(RotateTo::create(0.05, cocosAngle));
-						// 炮弹移动动作
-						Vec2 right = getBulletexX1(monster->getPosition(), turret->getPosition(), 2);
-						Vec2 left = getBulletexX1(monster->getPosition(), turret->getPosition(), 1);
-						Vec2 middle = getBulletexX1(monster->getPosition(), turret->getPosition(), 0);
-						// 计算炮弹移动的时间，避免因为距离长短而造成炮弹运行的速度问题
-						float duration2 = getBulletMoveTime(bullet1->getPosition(), right);
-						float duration1 = getBulletMoveTime(bullet1->getPosition(), left);
-						float duration = getBulletMoveTime(bullet1->getPosition(), middle);
-						auto moveTo1 = MoveTo::create(duration, middle);
-						auto moveTo2 = MoveTo::create(duration2, right);
-						auto moveTo3 = MoveTo::create(duration1, left);
-						bullet1->runAction(moveTo1);
-						bullet2->runAction(moveTo2);
-						bullet3->runAction(moveTo3);
-						// 将炮弹添加到炮弹数组
-						_bulletVector.pushBack(bullet1);
-						_bulletVector.pushBack(bullet2);
-						_bulletVector.pushBack(bullet3);
-						// 设置炮弹发射标记
-						bullet1->setShoot(true);
-						turret->setBullet(bullet1);
-						break;
-					}
-					if (turret->getType() == 2)
-					{
-						monster->setLifeValue(monster->getLifeValue() - 1);
-						if (monster->getHP() != nullptr) {
-							monster->getHP()->setPercent(monster->getHpInterval()*monster->getLifeValue());
-						}
-						// 如果怪物生命值为0
-						if (monster->getLifeValue() <= 0)
-						{
-							// 播放怪物被消灭的音效
-							SimpleAudioEngine::getInstance()->playEffect(EFFECT_FILE1);
-							// 从怪物集合中删除怪物
-							_monsterVector.eraseObject(monster);
-							// 金币增加
-							_goldValue += monster->getGold();
-							// 从地图上删除怪物
-							_tileMap->removeChild(monster);
-							_aliveCount--;
-							if (_aliveCount == 0)
-							{
-								_isThisFinish = true;
-							}
-						}
-					}
+					turret->Launch(_tileMap,monster, _bulletVector);
+					float cocosAngle = Bullet::getTurretRotation(monster->getPosition(), turret->getPosition());
+					turret->runAction(RotateTo::create(0.05, cocosAngle));
+					break;
 				}
 			}
 		}
 	}
 }
-
-bool Game::getCollidable(Vec2 position)
-{
-	// 将屏幕坐标转成地图坐标，用于判断是否可以放置炮塔
-	Vec2 tilePos = tileCoordForPosition(position);
-	// 如果触摸点是不可放置炮塔（即有障碍物）的位置，则直接return
-	int tileGid = _collidable->getTileGIDAt(tilePos);
-	if (tileGid) {
-		// 使用GID来查找指定tile的属性，返回一个Value
-		Value properties = _tileMap->getPropertiesForGID(tileGid);
-		// 返回的Value实际是一个ValueMap
-		ValueMap map = properties.asValueMap();
-		// 查找ValueMap，判断是否有障碍物，如果有，直接返回
-		std::string value = map.at("collidable").asString();
-		if (value.compare("true") == 0) {
-			return true;
-		}
-	}
-	return false;
-}
-
-// 检测是否在圆攻击范围内
-bool Game::checkPointInCircle(Vec2 monsterPoint, Vec2 turretPoint, int area)
-{
-	int x = monsterPoint.x - turretPoint.x;
-	int y = monsterPoint.y - turretPoint.y;
-	// sqrt函数求平方根
-	if (sqrt(x * x + y * y) <= area) return true;
-	return false;
-}
-
-// 根据炮弹移动距离计算炮弹需要移动时间
-float Game::getBulletMoveTime(Vec2 start, Vec2 end){
-	// 将起点和终点的坐标转换为TileMap坐标
-	Vec2 tileStart = tileCoordForPosition(start);
-	Vec2 tileEnd = tileCoordForPosition(end);
-	// 移动一个网格的时间
-	float duration = 0.02f;
-	// 根据移动网格计算移动时间
-	duration = duration * sqrtf((tileStart.x - tileEnd.x) * (tileStart.x - tileEnd.x)
-		+ (tileStart.y - tileEnd.y) * (tileStart.y - tileEnd.y));
-	return duration;
-}
-
-// 发射炮弹时计算炮弹的旋转方向
-float Game::getTurretRotation(Vec2 monsterPoint, Turret* turret)
-{
-	// 求旋转的角度，需要使用三角代数：反正切 = 对面 / 邻边
-	// monsterPoint.x：怪物坐标的x轴，turret->getPosition().x：炮塔坐标的x轴
-	int offX = monsterPoint.x - turret->getPosition().x;
-	// monsterPoint.y：怪物坐标的y轴，turret->getPosition().y：炮塔坐标的y轴
-	int offY = monsterPoint.y - turret->getPosition().y;
-	// 旋转弧度 = atan2f(反正切函数)（对面/邻边）
-	float radian = atan2f(offY, offX);
-	// CC_RADIANS_TO_DEGREES函数可以将弧度转化为角度
-	float degrees = CC_RADIANS_TO_DEGREES(radian);
-	// 转出来的角度和本例炮弹图片相差90度，因此，为了得到正确的方向，我们把需要将结果进行转换。
-	return 90 - degrees;
-}
-
 // 检测炮弹和怪物的碰撞
 void Game::collisionDetection(float delta)
 {
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	// 遍历怪物数组
-	for (unsigned int i = 0; i < _monsterVector.size(); i++) {
+	for (unsigned int i = 0; i < _monsterVector.size(); i++)
+	{
 		Monster* monster = _monsterVector.at(i);
 		// 遍历炮弹数组
 		for (unsigned int j = 0; j < _bulletVector.size(); j++) {
@@ -822,25 +620,8 @@ void Game::collisionDetection(float delta)
 				// 设置怪物的生命值减1
 				monster->setLifeValue(monster->getLifeValue() - 1);
 				// 更新怪物血条
-				if (monster->getHP() != nullptr) {
-					monster->getHP()->setPercent(monster->getHpInterval()*monster->getLifeValue());
-				}
-				// 如果怪物生命值为0
-				if (monster->getLifeValue() <= 0) {
-					// 播放怪物被消灭的音效
-					SimpleAudioEngine::getInstance()->playEffect(EFFECT_FILE1);
-					// 从怪物集合中删除怪物
-					_monsterVector.eraseObject(monster);
-					// 金币增加
-					_goldValue += monster->getGold();
-					// 从地图上删除怪物
-					_tileMap->removeChild(monster);
-					_aliveCount--;
-					if (_aliveCount == 0)
-					{
-						_isThisFinish = true;
-					}
-				}
+				
+				
 				// 从炮弹集合中删除炮弹
 					_bulletVector.eraseObject(bullet);
 					// 修改炮弹发射标记
@@ -867,6 +648,25 @@ void Game::collisionDetection(float delta)
 					bullet->setShoot(false);
 					_tileMap->removeChild(bullet);
 				}
+			}
+		}
+		if (monster->getHP() != nullptr) {
+			monster->getHP()->setPercent(monster->getHpInterval()*monster->getLifeValue());
+		}
+		// 如果怪物生命值为0
+		if (monster->getLifeValue() <= 0) {
+			// 播放怪物被消灭的音效
+			SimpleAudioEngine::getInstance()->playEffect(EFFECT_FILE1);
+			// 从怪物集合中删除怪物
+			_monsterVector.eraseObject(monster);
+			// 金币增加
+			_goldValue += monster->getGold();
+			// 从地图上删除怪物
+			_tileMap->removeChild(monster);
+			_aliveCount--;
+			if (_aliveCount == 0)
+			{
+				_isThisFinish = true;
 			}
 		}
 	}
@@ -941,6 +741,9 @@ void Game::gameOver(int tag)
 		// 进入下一关
 		play_button->loadTextures("btn-next.png", "btn-next.png");
 		_currentLevel++;
+
+		
+
 	}
 	else{
 		// 再试一次

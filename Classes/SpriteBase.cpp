@@ -47,6 +47,7 @@ int SpriteBase::getGold()
 	return _gold;
 }
 
+
 std::string SpriteBase::getName()
 {
 	return _name;

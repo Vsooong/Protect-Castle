@@ -2,20 +2,20 @@
 #define __ProtectCastle__Monster__
 
 #include <iostream>
-#include "cocos2d.h"
-#include "SpriteBase.h"
-#include "ui/CocosGUI.h"
+
+#include "MonsterBase.h"
 using namespace ui;
 
 // 怪物类
-class Monster : public SpriteBase
+class Monster :public MonsterBase
 {
 private:
 	int _lifeValue;  // 怪物的生命值
 	LoadingBar* _HP; // 怪物血条
 	double _HPInterval; // 怪物血条的更新量
 public:
-
+	Monster() {};
+	~Monster() {};
 	// 静态的create函数
 	static Monster* create(const std::string& filename);
 
@@ -33,6 +33,7 @@ public:
 	void setHPInterval(double HPInterval);
 
 	float getHpInterval();
+	void getInjured();
 
 };
 
