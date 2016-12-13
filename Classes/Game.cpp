@@ -5,7 +5,10 @@
 
 USING_NS_CC;
 using namespace ui;
+<<<<<<< HEAD
 using namespace std;
+=======
+>>>>>>> origin/master
 static int monsterCount = 1; // 每一波出现多少怪物
 static int _currentLevel = 1;  // 当前关卡
 

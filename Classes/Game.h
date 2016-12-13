@@ -17,7 +17,10 @@
 #include "GameEnd.h"
 #include "Coordinate.h"
 #include "Princess.h"
+<<<<<<< HEAD
 #include "MonsterFactory.h"
+=======
+>>>>>>> origin/master
 USING_NS_CC;
 using namespace CocosDenshion;
 
