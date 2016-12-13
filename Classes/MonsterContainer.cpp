@@ -11,7 +11,7 @@ MonsterContainer::MonsterContainer()
 MonsterContainer::~MonsterContainer()
 {
 }
-void MonsterContainer::loadMonster(TMXTiledMap* _tileMap, rapidjson::Value& monstersArray, int& monsterCount, Vector<MonsterDataOfWave*> & _monsterAllDatas) {
+void MonsterContainer::loadMonster(Game& game, rapidjson::Value& monstersArray) {
 
 
 
@@ -36,8 +36,10 @@ void MonsterContainer::loadMonster(TMXTiledMap* _tileMap, rapidjson::Value& mons
 			// 将MonsterData存储到关卡怪物数据的集合当中
 			monsterDatas->pushBack(monsterData);
 		}
-		_monsterAllDatas.pushBack(monsterDatas);
+		game._monsterAllDatas.pushBack(monsterDatas);
 	}
+	game._monsterDatas =game. _monsterAllDatas.at(0);
+	game._delivery =game._monsterDatas->getDelivery();
 
 }
 

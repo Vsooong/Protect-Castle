@@ -2,11 +2,12 @@
 #ifndef __ProtectCastle__MonsterContainer__
 #define __ProtectCastle__MonsterContainer__
 #include"MonsterDataOfWave.h"
-#include"MonsterFactory.h"
+
 #include "json/document.h"
 #include "PointDelegate.h"
 
-
+#include "Game.h"
+extern class Game;
 class MonsterContainer
 {
 public:
@@ -15,7 +16,7 @@ public:
 	MonsterContainer();
 	~MonsterContainer();
 	
-	void loadMonster(TMXTiledMap* _tileMap, rapidjson::Value& monstersArray,int&  monsterCount, Vector<MonsterDataOfWave*> & _monsterAllDatas);
+	 void loadMonster(Game& game, rapidjson::Value& monstersArray);
 
 //	void monsterMoveWithWayPoints(Vector<PointDelegate*> pathVector, Monster* monster);
 };

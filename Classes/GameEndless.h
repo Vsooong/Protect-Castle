@@ -2,6 +2,7 @@
 #define __ProtectCastle__GameEndless__
 
 #include "Game.h"
+#include"MonsterContainer.h"
 
 // ÎÞ¾¡Ä£Ê½
 class GameEndless : public Game

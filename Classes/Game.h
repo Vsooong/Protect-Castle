@@ -17,17 +17,15 @@
 #include "GameEnd.h"
 #include "Coordinate.h"
 #include "Princess.h"
-<<<<<<< HEAD
 #include "MonsterFactory.h"
-=======
->>>>>>> origin/master
+#include "MonsterContainer.h"
 USING_NS_CC;
 using namespace CocosDenshion;
 
 // 游戏逻辑类
 class Game : public cocos2d::Layer
 {
-protected:
+public:
 	TMXTiledMap* _tileMap;  // 地图
 	TMXLayer* _collidable;  // 障碍层
 	std::string _tileFile; // 关卡地图名称
@@ -63,7 +61,7 @@ protected:
 	Vector<Turret*> _turretVector; // 炮塔集合，存放已经添加的炮塔
 	Vector<Bullet*> _bulletVector; // 炮弹集合
 
-public:
+
 	/**
 	* 静态函数，创建Scene场景
 	* 注意：在Cocos2d-x中没有Cocos2d-iPhone中的“id”,建议返回类实例的指针返回类实例的指针
