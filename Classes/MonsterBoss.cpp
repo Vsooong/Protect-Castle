@@ -1,5 +1,6 @@
 #include "MonsterBoss.h"
 
-MonsterBoss::~MonsterBoss()
+MonsterBoss::MonsterBoss(Monster2* mBase)
 {
+	mBase->setLifeValue(mBase->getLifeValue() + 20);
 }

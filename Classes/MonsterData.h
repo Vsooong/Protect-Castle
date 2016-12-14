@@ -27,6 +27,8 @@ public:
 
 	int getLifeValue();
 
+	int getMonsterType();
+
 	void setGold(int gold);
 
 	int getGold();

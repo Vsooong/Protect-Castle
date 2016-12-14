@@ -5,7 +5,7 @@
 		 MonsterBase* MonsterFactory::getMonster(MonsterData* monsterData)
 {
 			 MonsterBase* monster;
-			 if(monsterData->getLifeValue()==1)
+			 if(monsterData->getMonsterType()==1)
 			 { 
 				 monster = Monster1::create(monsterData->getName());
 			 }

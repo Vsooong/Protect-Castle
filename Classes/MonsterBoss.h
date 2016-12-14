@@ -2,15 +2,15 @@
 #define __ProtectCastle__MonsterBoss__
 
 #include"MonsterBase.h"
-class MonsterBoss:public MonsterBase
+#include"Monster2.h"
+class MonsterBoss:public Monster2
 {
 private:
-	MonsterBase* _Boss;
+	Monster2* _Boss;
 	const int dodge = 40;
-	void Strong();
 public:
-	MonsterBoss();
-	MonsterBoss(MonsterBase* mBase);
-	~MonsterBoss();
+	MonsterBoss() {};
+	MonsterBoss(Monster2* mBase);
+	~MonsterBoss() {};
 };
 #endif

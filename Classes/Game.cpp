@@ -375,14 +375,14 @@ bool Game::initialize(int currentLevel)
 // ÓÎÏ·Ö÷Ñ­»·
 void Game::update(float delta)
 {
-	_count++;
-
 	MonsterContainer::updateMonster(delta, *this, monsterCount);
 	detectionTurret(delta);
 	collisionDetection(delta);
 	detectionPrincess(delta);
 	updateHUD(delta);
 	updateLable(delta);
+	_count++;
+
 }
 
 

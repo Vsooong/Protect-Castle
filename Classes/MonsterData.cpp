@@ -49,3 +49,8 @@ int MonsterData::getGold()
 {
 	return _gold;
 }
+
+int MonsterData::getMonsterType()
+{
+	return _lifeValue;
+}
