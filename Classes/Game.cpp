@@ -66,7 +66,7 @@ bool Game::initialize(int currentLevel)
 	{
 		return false;
 	}
-
+	
 	_currentLevel = currentLevel;
 
 	// 获得设备支持的可见OpenGL视图大小（即窗口大小）。
@@ -111,10 +111,8 @@ bool Game::initialize(int currentLevel)
 	_collidable->setVisible(true);
 
 	// 获得关卡设定的怪物
-	MonsterContainer* mstctn = new MonsterContainer();
-
     rapidjson::Value& monstersArray = document["monsters"];
-	mstctn->loadMonster(*this,  monstersArray);
+    MonsterContainer::loadMonster(*this,  monstersArray);
 	monsterCount = _monsterDatas->getCount();
 
 	// 获得关卡设定的炮塔
@@ -378,7 +376,8 @@ bool Game::initialize(int currentLevel)
 void Game::update(float delta)
 {
 	_count++;
-	updateMonster(delta);
+
+	MonsterContainer::updateMonster(delta, *this, monsterCount);
 	detectionTurret(delta);
 	collisionDetection(delta);
 	detectionPrincess(delta);
@@ -438,81 +437,6 @@ void Game::updateLable(float delta)
 {
 	// 更新怪物波数量
 	_currNumLabel->setString(StringUtils::format("%d", _currNum));
-}
-
-void Game::updateMonster(float delta)
-{
-	// _isFinish标记为false表示可以出现怪物
-	if (!_isFinish) {
-		if (_isThisFinish)
-		{
-			// _delivery变量为取模基数，通过设置该变量值，可以控制怪物出现频率
-			if (_count % _delivery == 0) {
-				// 当前出现怪物数量加1
-				_currentCount++;
-				if (_currentCount == monsterCount)
-				{
-					_isThisFinish = false;
-				}
-				// 如果当前出现怪物数量大于每一波出现多少怪物，表示一波结束
-				if (_currentCount > monsterCount) {
-					// 关卡怪物总波数减1
-					_number -= 1;
-					// 当关卡怪物总波数为0
-					if (_number == 0) {
-						// 设置标记，表示关卡所有怪物全部出现完毕
-						_isFinish = true;
-					}
-					else{
-						// 重新开始一波怪物
-						_currentCount = 0; // 当前出现怪物数量归零
-//						_delivery -= 5; // 改变取模基数，则怪物出现速度加快
-						_currNum ++; // 当前出现怪物波数加1
-						_monsterDatas = _monsterAllDatas.at(_currNum - 1);
-						monsterCount = _monsterDatas->getCount();
-						_delivery = _monsterDatas->getDelivery();
-					}
-				}
-				else{
-					// 调用TMXTiledMap的getObjectGroup函数获取对象层
-					auto pestObject = _tileMap->getObjectGroup("monsterObject");
-					// 根据对象名称获取对象的信息
-					ValueMap pestValueMap = pestObject->getObject("monster");
-					// 获取地图中设置的player对象的x和y值
-					int pestX = pestValueMap.at("x").asInt();
-					int pestY = pestValueMap.at("y").asInt();
-					/**
-					* 一个关卡可能出现多种怪物，可以在json文件中设置
-					* 随机创建怪物精灵，并将地图中对象的x和y值作为怪物出现的位置
-					*/
-					int random = rand() % _monsterDatas->size();
-					auto monsterData = _monsterDatas->at(random);
-
-					_aliveCount++;
-					MonsterFactory* mstFcty = new MonsterFactory();
-					Monster* monster = (Monster*)mstFcty->getMonster(monsterData);
-					monster->setPosition(pestX, pestY);
-					// 添加怪物血条
-					_tileMap->addChild(monster->getHP(), 2);
-					// 计算血条更新量
-					monster->setHPInterval(100 / monster->getLifeValue());
-					// 将怪物添为地图子节点
-					_tileMap->addChild(monster, 2);
-					// 将怪物添加到已出现怪物数组
-					_monsterVector.pushBack(monster);
-					// 怪物根据路径点移动
-					monsterMoveWithWayPoints(_pathPoints, monster);
-				}
-			}
-		}
-	}
-	else{
-		// _isFinish标记为true表示关卡所有怪物已经出现完毕
-		if (_monsterVector.size() <= 0) {
-			// 游戏胜利
-			gameOver(1);
-		}
-	}
 }
 
 

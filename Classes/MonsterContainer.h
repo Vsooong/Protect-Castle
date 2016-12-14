@@ -16,9 +16,11 @@ public:
 	MonsterContainer();
 	~MonsterContainer();
 	
-	 void loadMonster(Game& game, rapidjson::Value& monstersArray);
+	static  void loadMonster(Game& game, rapidjson::Value& monstersArray);
 
-//	void monsterMoveWithWayPoints(Vector<PointDelegate*> pathVector, Monster* monster);
+	//void monsterMoveWithWayPoints(Vector<PointDelegate*> pathVector, Monster* monster);
+	// 随机出现怪物
+	 static void updateMonster(float delta,Game& game,int monsterCount);
 };
 
 #endif

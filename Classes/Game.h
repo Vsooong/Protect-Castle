@@ -18,7 +18,9 @@
 #include "Coordinate.h"
 #include "Princess.h"
 #include "MonsterFactory.h"
+
 #include "MonsterContainer.h"
+
 USING_NS_CC;
 using namespace CocosDenshion;
 
@@ -39,8 +41,8 @@ public:
 	int _screenWidth, _screenHeight;  // 屏幕宽度和高度
 	int _count;  // 游戏帧计数器
 	int _delivery; // 出现怪物取模基数
-	Sprite* addImage;
 
+	Sprite* addImage;
 	MonsterDataOfWave* _monsterDatas;
 //	Vector<MonsterData*> _monsterDatas; // 当前关卡的怪物信息
 	Vector<MonsterDataOfWave*> _monsterAllDatas;
@@ -96,8 +98,6 @@ public:
 	virtual void updateHUD(float delta);
 	// 更新计数器
 	virtual void updateLable(float delta);
-	// 随机出现怪物
-	virtual void updateMonster(float delta);
 
 	// 检测炮塔
 	virtual void detectionTurret(float delta);
