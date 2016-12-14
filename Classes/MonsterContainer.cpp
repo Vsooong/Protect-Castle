@@ -92,7 +92,7 @@ void MonsterContainer::updateMonster(float delta, Game& game,int monsterCount) {
 
 					game._aliveCount++;
 					MonsterFactory* mstFcty = new MonsterFactory();
-					Monster* monster = (Monster*)mstFcty->getMonster(monsterData);
+					MonsterBase* monster = mstFcty->getMonster(monsterData);
 					monster->setPosition(pestX, pestY);
 					// Ìí¼Ó¹ÖÎïÑªÌõ
 					game._tileMap->addChild(monster->getHP(), 2);

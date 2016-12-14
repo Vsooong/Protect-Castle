@@ -44,8 +44,4 @@ void Monster2::getInjured()
 	{
 		setLifeValue(getLifeValue()+armor - 1);
 	}
-	else
-	{
-		
-	}
 }

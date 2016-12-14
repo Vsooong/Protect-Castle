@@ -441,7 +441,7 @@ void Game::updateLable(float delta)
 
 
 // 怪物根据路径点移动
-void Game::monsterMoveWithWayPoints(Vector<PointDelegate*> pathVector, Monster* monster){
+void Game::monsterMoveWithWayPoints(Vector<PointDelegate*> pathVector, MonsterBase* monster){
 	// 定义动作集合，用来保存多个moveTo动作
 	Vector<FiniteTimeAction*> actionVector;
 	// 循环路径点集合，创建多个MoveTo动作，玩家将执行多个MoveTo动作完成移动
@@ -495,7 +495,7 @@ void Game::detectionTurret(float delta)
 				bool flag = Turret::checkPointInCircle(monster->getPosition(), turret->getPosition(), 200);
 				if (flag==true)
 				{
-					turret->Launch(_tileMap,monster, _bulletVector);
+					turret->Launch(_tileMap,(Monster*)monster, _bulletVector);
 					float cocosAngle = Bullet::getTurretRotation(monster->getPosition(), turret->getPosition());
 					turret->runAction(RotateTo::create(0.05, cocosAngle));
 					break;
@@ -511,14 +511,15 @@ void Game::collisionDetection(float delta)
 	// 遍历怪物数组
 	for (unsigned int i = 0; i < _monsterVector.size(); i++)
 	{
-		Monster* monster = _monsterVector.at(i);
+		MonsterBase* monster = _monsterVector.at(i);
 		// 遍历炮弹数组
 		for (unsigned int j = 0; j < _bulletVector.size(); j++) {
 			auto bullet = _bulletVector.at(j);
 			// 如果怪物与炮弹发生了碰撞
 			if (monster->getBoundingBox().intersectsRect(bullet->getBoundingBox())){
-				// 设置怪物的生命值减1
-				monster->setLifeValue(monster->getLifeValue() - 1);
+				// 设置怪物的生命值1
+
+				monster->getInjured();
 				// 更新怪物血条
 				
 				

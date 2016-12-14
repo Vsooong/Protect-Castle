@@ -56,7 +56,7 @@ public:
 	Label* _goldLabel; // 显示当前玩家金币的Label
 
 //	std::vector<Vector<Monster*>> _monsterVectorS;
-	Vector<Monster*> _monsterVector;  // 存储出现怪物的集合
+	Vector<MonsterBase*> _monsterVector;  // 存储出现怪物的集合
 	bool _isFinish = false; // 关卡所有怪物是否全部出现标记
 	bool _isSelect = false; // 判断用户触碰是选择位置还是建造炮塔
 
@@ -93,7 +93,7 @@ public:
 	* pathVector：从关卡json文件中获取的路径集合
 	* monster：移动的怪物
 	*/
-	virtual void monsterMoveWithWayPoints(Vector<PointDelegate*> pathVector, Monster* monster);
+	virtual void monsterMoveWithWayPoints(Vector<PointDelegate*> pathVector, MonsterBase* monster);
 	// 更新HUD
 	virtual void updateHUD(float delta);
 	// 更新计数器

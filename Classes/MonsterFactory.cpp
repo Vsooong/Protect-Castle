@@ -4,14 +4,24 @@
 
 		 MonsterBase* MonsterFactory::getMonster(MonsterData* monsterData)
 {
-
+			 MonsterBase* monster;
+			 if(monsterData->getLifeValue()==1)
+			 { 
+				 monster = Monster1::create(monsterData->getName());
+			 }
+			 else
+			 {
+				 monster = Monster2::create(monsterData->getName());
+			 }
 		// 根据怪物名称创建怪物
-		auto monster = Monster::create(monsterData->getName());
+		
 		
 
 		// 设置怪物名称、生命值、消灭怪物的金币值和怪物出现坐标
 		monster->setName(monsterData->getName());
 		monster->setLifeValue(monsterData->getLifeValue());
+
+
 		monster->setGold(monsterData->getGold());
 		monster->setScale(0.7);
 		
